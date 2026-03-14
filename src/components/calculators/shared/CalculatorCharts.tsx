@@ -617,13 +617,14 @@ export function GaugeChartWidget({ value, maxValue = 100, label, segments = 5, h
 }
 
 // ==================== HORIZONTAL BAR ====================
-export function HorizontalBarWidget({ data, valueKey = 'value', labelKey = 'label', height, showValues = true, maxValue }: {
+export function HorizontalBarWidget({ data, valueKey = 'value', labelKey = 'label', height, showValues = true, maxValue, minBarWidth = 8 }: {
   data: { label: string; value: number; color?: string }[]
   valueKey?: string
   labelKey?: string
   height?: number
   showValues?: boolean
   maxValue?: number
+  minBarWidth?: number
 }) {
   const max = maxValue || Math.max(...data.map(d => d.value))
   
@@ -631,24 +632,21 @@ export function HorizontalBarWidget({ data, valueKey = 'value', labelKey = 'labe
     <div className="space-y-2" style={{ height }}>
       {data.map((item, index) => {
         const percentage = (item.value / max) * 100
+        const barWidth = Math.max(percentage, minBarWidth)
         return (
           <div key={index} className="flex items-center gap-3">
-            <div className="w-40 text-sm text-muted shrink-0">{item.label}</div>
+            <div className="w-16 text-sm text-muted shrink-0">{item.label}</div>
             <div className="flex-1 h-6 bg-muted/20 rounded overflow-hidden">
               <div 
-                className="h-full rounded flex items-center justify-end pr-2 transition-all duration-500"
+                className="h-full rounded transition-all duration-500"
                 style={{ 
-                  width: `${percentage}%`,
+                  width: `${barWidth}%`,
                   backgroundColor: item.color || CHART_COLORS[index % CHART_COLORS.length]
                 }}
-              >
-                {showValues && percentage > 20 && (
-                  <span className="text-xs font-medium text-white">{item.value.toLocaleString('ru-RU')}</span>
-                )}
-              </div>
+              />
             </div>
-            {showValues && percentage <= 20 && (
-              <span className="text-xs font-medium">{item.value.toLocaleString('ru-RU')}</span>
+            {showValues && (
+              <span className="text-xs font-medium w-20 text-right">{item.value.toFixed(2)}</span>
             )}
           </div>
         )

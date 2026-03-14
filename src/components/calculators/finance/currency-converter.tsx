@@ -25,6 +25,17 @@ const SUPPORTED_CURRENCIES = ['RUB', 'USD', 'EUR', 'KZT', 'BYN', 'UAH', 'GBP', '
 
 type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number]
 
+const CURRENCY_COLORS: Record<SupportedCurrency, string> = {
+ RUB: '#e53935', // красный
+ USD: '#43a047', // зелёный
+ EUR: '#1e88e5', // синий
+ KZT: '#fb8c00', // оранжевый
+ BYN: '#8e24aa', // фиолетовый
+ UAH: '#fdd835', // жёлтый
+ GBP: '#00acc1', // бирюзовый
+ CNY: '#d81b60', // розовый
+}
+
 const FALLBACK_RATES_USD: Record<SupportedCurrency, number> = {
  USD: 1,
  RUB: 90,
@@ -153,9 +164,9 @@ export function CurrencyConverter({ calculator }: Props) {
  return SUPPORTED_CURRENCIES.map((currency) => ({
  label: currency,
  value: rubRate / (ratesUsd[currency] || 1),
- color: currency === from ? '#6366f1' : currency === to ? '#22c55e' : '#8b5cf6',
+ color: CURRENCY_COLORS[currency],
  }))
- }, [ratesUsd, from, to])
+ }, [ratesUsd])
 
  const conversionComparison = useMemo(() => {
  if (result === null || !Number.isFinite(numericAmount)) return []
@@ -248,7 +259,7 @@ export function CurrencyConverter({ calculator }: Props) {
 
  <div className="glass-card p-4">
  <h3 className="mb-4 text-lg font-semibold">
- {language === 'ru' ? 'Курсы валют (1 единица в RUB)' : 'Exchange Rates (1 unit in RUB)'}
+ {language === 'ru' ? 'Курсы валют (в рублях)' : 'Exchange Rates (in RUB)'}
  </h3>
  <HorizontalBarWidget data={rateData} />
  </div>
