@@ -187,20 +187,14 @@ export function CurrencyConverter({ calculator }: Props) {
  if (result === null || currentRate === null || !Number.isFinite(numericAmount)) return []
 
  const locale = language === 'ru' ? 'ru-RU' : 'en-US'
- const updated = lastUpdated
- ? new Date(lastUpdated).toLocaleString(locale)
- : language === 'ru'
- ? 'только что'
- : 'just now'
 
  return [
  { label: language === 'ru' ? 'Исходная сумма' : 'Original', value: `${numericAmount.toLocaleString(locale)} ${from}` },
  { label: language === 'ru' ? 'Результат' : 'Result', value: `${result.toFixed(2)} ${to}` },
  { label: language === 'ru' ? 'Курс' : 'Rate', value: `1 ${from} = ${currentRate.toFixed(4)} ${to}` },
  { label: language === 'ru' ? 'Обратный курс' : 'Reverse Rate', value: `1 ${to} = ${(1 / currentRate).toFixed(4)} ${from}` },
- { label: language === 'ru' ? 'Обновлено' : 'Updated', value: updated },
  ]
- }, [result, currentRate, numericAmount, from, to, language, lastUpdated])
+ }, [result, currentRate, numericAmount, from, to, language])
 
  return (
  <CalculatorShell calculator={calculator}>
@@ -233,14 +227,6 @@ export function CurrencyConverter({ calculator }: Props) {
  </select>
  </div>
  </div>
-
- <p className="mt-3 text-xs text-muted">
- {language === 'ru'
- ? 'Курсы обновляются в реальном времени через поток данных (SSE).'
- : 'Exchange rates update in real time via a server stream (SSE).'}
- </p>
-
- {ratesError && <p className="mt-1 text-xs text-red-500">{ratesError}</p>}
 
  {result !== null && (
  <div className="mt-6 space-y-6">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGameStore } from '@/store/gameStore'
 import { useSettingsStore } from '@/store/settingsStore'
 
@@ -10,6 +10,13 @@ const DEVELOPER_DEVICE_IDS = [
 ]
 
 type AdminAction = 'clearAll' | 'clearByNick' | 'clearAllNicks' | 'removeNick' | null
+
+interface ExchangeRatesApiResponse {
+  rates?: Record<string, number>
+  time_last_update_utc?: string
+}
+
+const SUPPORTED_CURRENCIES = ['RUB', 'USD', 'EUR', 'KZT', 'BYN', 'UAH', 'GBP', 'CNY'] as const
 
 export function DeveloperPanel() {
   const language = useSettingsStore((s) => s.language)
@@ -26,9 +33,62 @@ export function DeveloperPanel() {
   const [adminAction, setAdminAction] = useState<AdminAction>(null)
   const [inputNick, setInputNick] = useState('')
 
+  // Exchange rates state
+  const [rates, setRates] = useState<Record<string, number>>({})
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null)
+  const [streamStatus, setStreamStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected')
+
   const currentDeviceId = deviceId || getDeviceId()
   const isDeveloper = DEVELOPER_DEVICE_IDS.includes(currentDeviceId)
   const allNicknames = getAllNicknames()
+
+  // Exchange rates SSE subscription
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchInitialRates = async () => {
+      try {
+        const res = await fetch('/api/exchange-rate', { cache: 'no-store' })
+        if (!res.ok) throw new Error('Failed to fetch')
+        const data = await res.json() as ExchangeRatesApiResponse
+        if (isMounted && data?.rates) {
+          setRates(data.rates)
+          setLastUpdated(data.time_last_update_utc ?? new Date().toISOString())
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    void fetchInitialRates()
+
+    const source = new EventSource('/api/exchange-rate/stream')
+
+    source.onopen = () => {
+      if (isMounted) setStreamStatus('connected')
+    }
+
+    source.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as ExchangeRatesApiResponse
+        if (isMounted && data?.rates) {
+          setRates(data.rates)
+          setLastUpdated(data.time_last_update_utc ?? new Date().toISOString())
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    source.onerror = () => {
+      if (isMounted) setStreamStatus('error')
+    }
+
+    return () => {
+      isMounted = false
+      source.close()
+    }
+  }, [])
 
   const handleAction = () => {
     switch (adminAction) {
@@ -177,6 +237,55 @@ export function DeveloperPanel() {
         </h3>
         <p className="text-lg font-medium">
           {currentPlayerName || <span className="text-muted">(не выбран)</span>}
+        </p>
+      </div>
+
+      {/* Exchange Rates Section */}
+      <div className="glass-card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-muted">
+            {language === 'ru' ? 'Курсы валют (SSE)' : 'Exchange Rates (SSE)'}
+          </h3>
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${
+              streamStatus === 'connected' ? 'bg-green-500 animate-pulse' :
+              streamStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+            }`} />
+            <span className="text-xs text-muted">
+              {streamStatus === 'connected' ? (language === 'ru' ? 'Подключено' : 'Connected') :
+               streamStatus === 'error' ? (language === 'ru' ? 'Ошибка' : 'Error') :
+               (language === 'ru' ? 'Подключение...' : 'Connecting...')}
+            </span>
+          </div>
+        </div>
+
+        {lastUpdated && (
+          <p className="text-xs text-muted mb-3">
+            {language === 'ru' ? 'Последнее обновление:' : 'Last updated:'}{' '}
+            {new Date(lastUpdated).toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US')}
+          </p>
+        )}
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {SUPPORTED_CURRENCIES.map((currency) => (
+            <div key={currency} className="p-2 rounded bg-muted/10 text-center">
+              <p className="text-xs text-muted">{currency}</p>
+              <p className="text-sm font-mono font-medium">
+                {rates[currency]?.toFixed(4) ?? '—'}
+              </p>
+              <p className="text-xs text-muted/60">
+                {currency === 'USD' ? '1 USD' : rates['USD'] && rates[currency] 
+                  ? `1 ${currency} = ${(rates['USD'] / rates[currency]).toFixed(2)} USD`
+                  : '—'}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-muted/60 mt-3">
+          {language === 'ru'
+            ? 'Курсы обновляются в реальном времени через Server-Sent Events (SSE). Базовая валюта: USD.'
+            : 'Rates update in real time via Server-Sent Events (SSE). Base currency: USD.'}
         </p>
       </div>
 
