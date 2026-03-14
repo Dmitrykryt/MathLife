@@ -617,7 +617,7 @@ export function GaugeChartWidget({ value, maxValue = 100, label, segments = 5, h
 }
 
 // ==================== HORIZONTAL BAR ====================
-export function HorizontalBarWidget({ data, valueKey = 'value', labelKey = 'label', height, showValues = true, maxValue, minBarWidth = 2 }: {
+export function HorizontalBarWidget({ data, valueKey = 'value', labelKey = 'label', height, showValues = true, maxValue, minBarWidth = 1 }: {
   data: { label: string; value: number; color?: string }[]
   valueKey?: string
   labelKey?: string
