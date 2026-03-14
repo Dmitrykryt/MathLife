@@ -88,17 +88,6 @@ export const realLifeCalculators: Calculator[] = [
     tags: ['зарплата', 'налог', 'доход'],
   },
   {
-    id: 'tax',
-    slug: 'income-tax-calculator',
-    name: 'Налог на доход',
-    description: 'Расчёт подоходного налога и налоговых вычетов',
-    category: 'finance',
-    icon: 'Calculator',
-    keywords: ['налог', 'подоходный', '13%', 'вычет', 'tax', 'income'],
-    difficulty: 'beginner',
-    tags: ['налог', 'доход', 'вычет'],
-  },
-  {
     id: 'currency',
     slug: 'currency-converter',
     name: 'Конвертер валют',
