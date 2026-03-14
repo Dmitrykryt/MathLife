@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #60a5fa;
+  --color-secondary: #a78bfa;
+  --color-accent: #22d3ee;
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  background-image:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--color-primary) 20%, transparent) 0%, transparent 35%),
+    radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--color-secondary) 18%, transparent) 0%, transparent 40%),
+    linear-gradient(180deg, var(--color-background), color-mix(in srgb, var(--color-background) 85%, #000 15%));
+}
+
+/* Typography - Headings use Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  letter-spacing: -0.01em;
+}
+
+/* Navigation uses Lato-style (Inter with different weight) */
+nav, .nav-link {
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-weight: 500;
+}
+
+/* Cards and sections */
+.glass-card, .card {
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+}
+
+/* Code and formulas */
+code, pre, .font-mono {
+  font-family: var(--font-mono), JetBrains Mono, Fira Code, monospace;
+}
+
+/* Numbers in calculators - mono for readability */
+input[type="number"], .calculator-result, .result-display {
+  font-family: var(--font-mono), JetBrains Mono, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buttons - Poppins for modern look */
+button, .btn, .btn-primary {
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-weight: 600;
+}
+
+/* Calculator inputs - Inter */
+.input, input:not([type="number"]) {
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+}
+
+/* Labels and small text */
+label, .label, small, .text-sm {
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-weight: 400;
+}
+
+/* Game scores and stats */
+.score, .stats, .stat-value {
+  font-family: var(--font-mono), JetBrains Mono, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  padding: 20px;
+}
+
+.btn-primary {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 50%, #fff 5%);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  color: var(--color-text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+/* Hide number input spinners */
+.input[type="number"]::-webkit-inner-spin-button,
+.input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.text-muted {
+  color: var(--color-muted);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+  background: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  color: var(--color-text);
+}
+
+/* Recharts tooltip - always on top */
+.recharts-tooltip-wrapper {
+  z-index: 1000 !important;
+}
+
+.recharts-default-tooltip {
+  z-index: 1000 !important;
+  position: relative;
+}
